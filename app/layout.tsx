@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import LightRays from '../components/LightRays';
 import Navbar from "../components/Navbar";
+import  PostHogProvider  from "@/components/PostHogProvider";
 
 
 const schibstedGrotesk = Schibsted_Grotesk({
@@ -50,7 +51,10 @@ export default function RootLayout({
 
         <Navbar/>
         <main>
+          <PostHogProvider>
+
           {children}
+          </PostHogProvider>
         </main>
       </body>
     </html>
