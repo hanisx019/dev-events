@@ -14,7 +14,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const BookingSchema = new Schema<BookingDocument, BookingModel>(
   {
-    eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true, index: true },
+    eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true},
     email: { type: String, required: true, trim: true, lowercase: true,
       validate: {
         validator: (value: string): boolean => EMAIL_REGEX.test(value),

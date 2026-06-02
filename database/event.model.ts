@@ -152,6 +152,16 @@ const EventSchema = new Schema<EventDocument, EventModel>(
 // Create a unique index on the slug field to enforce uniqueness at the database level.
 EventSchema.index({ slug: 1 }, { unique: true });
 
+// Ensure slug exists before validation, since required validation runs in pre('validate').
+EventSchema.pre("validate", function (this: HydratedDocument<EventDocument>) {
+  if (
+    (this.isNew || this.isModified("title") || !this.slug) &&
+    typeof this.title === "string" &&
+    this.title.trim() !== ""
+  ) {
+    this.slug = slugifyTitle(this.title);
+  }
+});
 
 /// Pre-save hook to enforce additional validation and normalization logic.
 EventSchema.pre("save", function (this: HydratedDocument<EventDocument>) {
@@ -193,11 +203,6 @@ EventSchema.pre("save", function (this: HydratedDocument<EventDocument>) {
     tags.map((item) => item.trim())
   );
   /////////
-
-  // Regenerate slug only when title changes.
-  if (this.isNew || this.isModified("title")) {
-    this.slug = slugifyTitle(this.title);
-  }
 
   // Normalize date/time into a stable storage format.
   if (this.isNew || this.isModified("date")) {
