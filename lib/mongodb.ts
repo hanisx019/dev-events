@@ -47,13 +47,15 @@ const connectionOptions: ConnectOptions = {
 }
 
 // Main function to connect to MongoDB using Mongoose with caching and error handling.
-export async function connectToDatabase(): Promise<typeof mongoose> {
+export async function connectDB(): Promise<typeof mongoose> {
   // Return the existing connection if it's already established and ready.
   if (cache.conn && mongoose.connection.readyState === 1) {
     return cache.conn
   }
-  // If the connection is not ready, reset the cache to allow for a new connection attempt.
-  if (mongoose.connection.readyState !== 1) {
+
+  // Only reset the cache when the connection is fully disconnected or closing.
+  // Preserve an in-flight connect promise while mongoose.connection.readyState === 2.
+  if (mongoose.connection.readyState === 0 || mongoose.connection.readyState === 3) {
     cache.conn = null
     cache.promise = null
   }
