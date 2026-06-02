@@ -154,7 +154,11 @@ EventSchema.index({ slug: 1 }, { unique: true });
 
 // Ensure slug exists before validation, since required validation runs in pre('validate').
 EventSchema.pre("validate", function (this: HydratedDocument<EventDocument>) {
-  if (this.isNew || this.isModified("title") || !this.slug) {
+  if (
+    (this.isNew || this.isModified("title") || !this.slug) &&
+    typeof this.title === "string" &&
+    this.title.trim() !== ""
+  ) {
     this.slug = slugifyTitle(this.title);
   }
 });
